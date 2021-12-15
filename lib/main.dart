@@ -1,27 +1,26 @@
-import 'package:chitchat/home.dart';
-import 'package:chitchat/login.dart';
-import 'package:chitchat/signup.dart';
+import 'package:chitchat/screens/wrapper.dart';
+import 'package:chitchat/services/auth.dart';
+import 'package:chitchat/models/user.dart';
 
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+  
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-          primaryColor: Color(0xff075e54),
-          primaryColorLight: Color(0xff08d261)),
-      home: RegistrationScreen(),
-      routes: {
-        RegistrationScreen.routeName: (ctx) => RegistrationScreen(),
-        LoginScreen.routeName: (ctx) => LoginScreen(),
-        HomeScreen.routeName: (ctx) => HomeScreen(),
-      },
+    return MultiProvider(
+      providers: [
+        StreamProvider<User>(create: (_) => AuthService().user),
+      ],
+      child: MaterialApp(
+        home: Wrapper(),
+      ),
     );
   }
 }
