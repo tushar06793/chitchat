@@ -1,21 +1,28 @@
-import 'package:chitchat/home.dart';
-import 'package:chitchat/login.dart';
+import 'package:chitchat/services/auth.dart';
 import 'package:flutter/material.dart';
 
-class RegistrationScreen extends StatefulWidget {
-  static const routeName = '/signup';
+class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<RegistrationScreen> {
+class _LoginScreenState extends State<LoginScreen> {
+
+  final AuthService _auth = AuthService();
+
+  String error = '';
+
+  final usernameController = TextEditingController();
+  final phoneNumberController = TextEditingController();
+  final otpController = TextEditingController();
+
+  final GlobalKey<FormState> _formkey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<FormState> _formkey = GlobalKey();
-    void _submit() {}
     return Scaffold(
       appBar: AppBar(
-        title: Text('Register'),
+        title: Text('Login'),
       ),
       body: Stack(
         children: <Widget>[
@@ -40,11 +47,12 @@ class _LoginScreenState extends State<RegistrationScreen> {
                   child: SingleChildScrollView(
                     child: Column(
                       children: <Widget>[
-                        //Enter Mobile No.
+                        // Enter user name
                         TextFormField(
+                          controller: usernameController,
                           decoration:
                               InputDecoration(labelText: 'Enter Your Name'),
-                          keyboardType: TextInputType.phone,
+                          keyboardType: TextInputType.name,
                           validator: (value) {
                             if (value != null && (value.isEmpty)) {
                               return 'Invalid Format';
@@ -53,7 +61,10 @@ class _LoginScreenState extends State<RegistrationScreen> {
                           },
                           onSaved: (value) {},
                         ),
+
+                        //Enter Mobile No.
                         TextFormField(
+                          controller: phoneNumberController,
                           decoration: InputDecoration(labelText: 'Mobile No.'),
                           keyboardType: TextInputType.phone,
                           validator: (value) {
@@ -63,16 +74,24 @@ class _LoginScreenState extends State<RegistrationScreen> {
                             }
                             return null;
                           },
-                          onSaved: (value) {},
                         ),
+
                         SizedBox(
                           height: 30,
                         ),
                         RaisedButton(
-                          child: Text('Register'),
-                          onPressed: () {
-                            Navigator.of(context)
-                                .pushReplacementNamed(LoginScreen.routeName);
+                          child: Text('Login'),
+                          onPressed: () async {
+
+                            var username = usernameController.text;
+                            var phoneNumber =  "+91" + phoneNumberController.text;
+
+                            print(username);
+                            print(phoneNumber);
+
+                            AuthService.name = username;
+                            await _auth.signInWithPhoneNumber(phoneNumber, context);
+                            // Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
@@ -86,6 +105,20 @@ class _LoginScreenState extends State<RegistrationScreen> {
                 ),
               ),
             ),
+          ),
+          SizedBox(
+            height: 50.0,
+          ),
+          RaisedButton(
+            child: Text('Sign in anom'),
+            onPressed: () async {
+              dynamic result = await _auth.signInAnom();
+              if (result == null) {
+                print('Sign in Failed');
+              } else {
+                print('Sign in successful');
+              }
+            },
           ),
         ],
       ),

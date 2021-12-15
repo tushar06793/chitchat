@@ -1,17 +1,28 @@
-import 'package:chitchat/chats.dart';
-import 'package:chitchat/status.dart';
+import 'package:chitchat/models/user.dart';
+import 'package:chitchat/screens/home/chats.dart';
+import 'package:chitchat/screens/home/status.dart';
+import 'package:chitchat/screens/home/calls.dart';
+import 'package:chitchat/services/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:chitchat/calls.dart';
 
 class HomeScreen extends StatefulWidget {
-  static const routeName = '/home';
+
+  final User user;
+  HomeScreen({ required this.user });
+
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _HomeScreenState createState() => _HomeScreenState(user: user);
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+
+  final AuthService _auth = AuthService();
+
+  final User user;
+  _HomeScreenState({ required this.user });
+
   late TabController _tabController;
+
   @override
   void initState() {
     _tabController = new TabController(length: 4, initialIndex: 1, vsync: this)
@@ -28,7 +39,12 @@ class _HomeScreenState extends State<HomeScreen>
           title: Text('ChitChat'),
           actions: [
             IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-            IconButton(onPressed: () {}, icon: Icon(Icons.more_vert))
+            IconButton(
+              onPressed: () {
+                _auth.signOut();
+              }, 
+              icon: Icon(Icons.more_vert)
+            )
           ],
           bottom: TabBar(
             isScrollable: true,
@@ -39,17 +55,17 @@ class _HomeScreenState extends State<HomeScreen>
             tabs: [
               Icon(Icons.camera_alt),
               Container(
-                width: 50,
+                width: 70,
                 alignment: Alignment.center,
                 child: Text('CHATS'),
               ),
               Container(
-                width: 50,
+                width: 70,
                 alignment: Alignment.center,
                 child: Text('STATUS'),
               ),
               Container(
-                width: 50,
+                width: 70,
                 alignment: Alignment.center,
                 child: Text('CALLS'),
               ),
