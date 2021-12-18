@@ -1,3 +1,4 @@
+import 'package:chitchat/screens/home/Conversation.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatelessWidget {
@@ -15,7 +16,17 @@ class ChatScreen extends StatelessWidget {
           leading: CircleAvatar(
             backgroundImage: AssetImage(images),
           ),
-          title: Text(title),
+          title: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ConversationScreen()),
+              );
+            },
+            child: Container(
+              child: Text(title),
+            ),
+          ),
           subtitle: Text(msg),
           trailing: Column(
             children: [
