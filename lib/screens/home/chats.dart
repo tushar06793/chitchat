@@ -20,7 +20,9 @@ class ChatScreen extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ConversationScreen()),
+                MaterialPageRoute(
+                    builder: (context) => ConversationScreen(
+                        images: images.toString(), title: title.toString())),
               );
             },
             child: Container(
