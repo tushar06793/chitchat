@@ -92,7 +92,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             AuthService.name = username;
                             await _auth.signInWithPhoneNumber(phoneNumber, context);
-                            // Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),

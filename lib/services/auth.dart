@@ -40,9 +40,21 @@ class AuthService {
 
     await _auth.verifyPhoneNumber(
       phoneNumber: number,
-      timeout: Duration(seconds: 60),
+      timeout: Duration(seconds: 60*2),
       verificationCompleted: (AuthCredential credential) async {
-        await _auth.signInWithCredential(credential);
+        UserCredential userCredential= await _auth.signInWithCredential(credential);
+        userCredential.user!.updateDisplayName(name);
+
+        print("Login successfully");
+
+        await _firestore.collection('users').doc(number).set({
+          "name": name,
+          "phone": number,
+          "status": "Unavalible",
+          "uid": _auth.currentUser!.uid,
+        });
+
+        Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
       },
       verificationFailed: (FirebaseAuthException exception) {
         // Navigator.of(context).pop();
@@ -58,18 +70,24 @@ class AuthService {
               children: <Widget>[
                 TextField(
                   controller: _codeController,
+                  keyboardType: TextInputType.number,
                 )
               ],
             ),
             actions: <Widget>[
               FlatButton(
                 onPressed: () async {
+
+                  print(_codeController.text.trim());
+
                   AuthCredential credential = PhoneAuthProvider.credential(
                     verificationId: verificationId,
                     smsCode: _codeController.text.trim(),
                   );
                   UserCredential userCredential= await _auth.signInWithCredential(credential);
                   userCredential.user!.updateDisplayName(name);
+
+                  print("Login successfully");
 
                   await _firestore.collection('users').doc(number).set({
                     "name": name,
