@@ -1,7 +1,11 @@
-class User {
+class LocalUser {
+  late String uid;
+  late String username;
+  late String phone;
 
-  final String uid;
-  final String username;
-  final String phone;
-  User({ required this.uid, required this.username, required this.phone });
+  LocalUser(String uid, String username, String phone){
+    this.uid = uid;
+    this.username = username;
+    this.phone = phone;
+  }
 }

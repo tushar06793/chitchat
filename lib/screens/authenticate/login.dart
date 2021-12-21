@@ -1,3 +1,4 @@
+import 'package:chitchat/screens/home/home.dart';
 import 'package:chitchat/services/auth.dart';
 import 'package:flutter/material.dart';
 
@@ -84,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () async {
 
                             var username = usernameController.text;
-                            var phoneNumber =  "+91" + phoneNumberController.text;
+                            var phoneNumber = phoneNumberController.text;
 
                             print(username);
                             print(phoneNumber);
@@ -112,12 +113,17 @@ class _LoginScreenState extends State<LoginScreen> {
           RaisedButton(
             child: Text('Sign in anom'),
             onPressed: () async {
-              dynamic result = await _auth.signInAnom();
-              if (result == null) {
-                print('Sign in Failed');
-              } else {
-                print('Sign in successful');
-              }
+
+              await _auth.signInAnom().then((user) {
+                if (user != null) {
+                  print("Login Sucessfull");
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (_) => HomeScreen()));
+                } else {
+                  print("Login Failed");
+                }
+              });
+
             },
           ),
         ],

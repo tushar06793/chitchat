@@ -1,4 +1,5 @@
 import 'package:chitchat/models/user.dart';
+import 'package:chitchat/screens/authenticate/login.dart';
 import 'package:chitchat/screens/home/chats.dart';
 import 'package:chitchat/screens/home/status.dart';
 import 'package:chitchat/screens/home/calls.dart';
@@ -7,19 +8,13 @@ import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
 
-  final User user;
-  HomeScreen({ required this.user });
-
   @override
-  _HomeScreenState createState() => _HomeScreenState(user: user);
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
 
   final AuthService _auth = AuthService();
-
-  final User user;
-  _HomeScreenState({ required this.user });
 
   late TabController _tabController;
 
@@ -34,14 +29,29 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+
+    if(_auth.getUser() == null){
+      Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()));
+    }
+    // ignore: unused_local_variable
+    LocalUser user = _auth.castLocalUser(_auth.getUser()!)!;
+
     return Scaffold(
         appBar: AppBar(
           title: Text('ChitChat'),
           actions: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.search)),
             IconButton(
               onPressed: () {
-                _auth.signOut();
+                // accept text
+              }, 
+              icon: Icon(Icons.search)
+            ),
+            IconButton(
+              onPressed: () async {
+                // open a builder
+                await _auth.signOut();
+                Navigator.push(
+                      context, MaterialPageRoute(builder: (_) => LoginScreen()));
               }, 
               icon: Icon(Icons.more_vert)
             )
