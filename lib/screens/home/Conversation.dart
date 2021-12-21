@@ -24,7 +24,7 @@ class ConversationScreen extends StatelessWidget {
           decoration: InputDecoration(
             prefix: IconButton(
               onPressed: () {},
-              icon: Icon(Icons.add_reaction),
+              icon: Icon(),
             ),
             suffix: IconButton(
               onPressed: () {},
