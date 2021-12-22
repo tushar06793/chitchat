@@ -21,13 +21,35 @@ class Service {
         chats.add({
           "friend": friend,
           "last_chat": doc.data()["last_sender"] 
-            ? new Chat(data["last_chat_id"], user, friend, data["last_message"]) 
-            : new Chat(data["last_chat_id"], friend, user, data["last_message"])
+            ? new Chat(user, friend, "text", DateTime.fromMicrosecondsSinceEpoch(data["last_chat_time"]), message: data["last_chat"]) 
+            : new Chat(friend, user, "text", DateTime.fromMicrosecondsSinceEpoch(data["last_chat_time"]), message: data["last_chat"]) 
         });
       }
     });
 
     return chats;
+  }
+
+  Future<List<List<Chat>>?> fetchChats(LocalUser user, LocalUser friend) async {
+    List<Chat> sendChats = [], recieveChats = [];
+    
+    // chats of 1-1 chatting that owner sended
+    await _firestore.collection('chatroom').doc(user.phone).collection("chats").where("phone", isEqualTo: friend.phone).get().then((SnapShot) async {
+      for(var doc in SnapShot.docs){
+        var data = doc.data();
+        sendChats.add(new Chat(user, friend, data["type"], data["time"], message: data["message"], attatchmentURI: data["attatchmentURI"]));
+      }
+    });
+
+    // chats of 1-1 chatting that owner recieved
+    await _firestore.collection('chatroom').doc(friend.phone).collection("chats").where("phone", isEqualTo: user.phone).get().then((SnapShot) async {
+      for(var doc in SnapShot.docs){
+        var data = doc.data();
+        recieveChats.add(new Chat(friend, user, data["type"], data["time"], message: data["message"], attatchmentURI: data["attatchmentURI"]));
+      }
+    });
+
+    return [sendChats, recieveChats];
   }
 
   Future setStatus(LocalUser user, String status) async {
@@ -48,17 +70,16 @@ class Service {
     // for owners
     await _firestore.collection('users').doc(chat.owner.phone).collection('friends').doc(chat.reciever.phone).set({
       "phone": chat.reciever.phone,
-      "last_chat_id": chat.uid,
       "last_chat": chat.message,
+      "last_chat_time": chat.time.microsecondsSinceEpoch,
       "last_sender": true
     });
 
     // for reciever
-    doc["sender"] = false;
     await _firestore.collection('users').doc(chat.reciever.phone).collection('friends').doc(chat.owner.phone).set({
       "phone": chat.owner.phone,
-      "last_chat_id": chat.uid,
       "last_chat": chat.message,
+      "last_chat_time": chat.time.microsecondsSinceEpoch,
       "last_sender": false
     });
 

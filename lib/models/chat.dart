@@ -2,44 +2,41 @@ import 'package:chitchat/models/user.dart';
 import 'package:chitchat/services/firebase_service.dart';
 
 class Chat {
-  late String uid;
   late LocalUser owner;
   late LocalUser reciever;
   late String message;
-  late bool isAttachment;
+  late String msgType = "text";
+  late String attatchmentURI;
   late var attachment;
+  late DateTime time;
 
   final Service service = Service();
 
-  Chat(String uid, LocalUser owner, LocalUser reciever, String message, {bool isAttachment = false, var attachment = null}){
-    this.uid = uid;
+  Chat(LocalUser owner, LocalUser reciever, String msgType, DateTime time, {String message = "", var attachment = null, String attatchmentURI = ""}){
     this.owner = owner;
     this.reciever = reciever;
+    this.msgType == msgType;
     this.message = message;
-    this.isAttachment = isAttachment;
+    this.attatchmentURI = attatchmentURI;
     this.attachment = attachment;
+    this.time = time;
   }
 
   Future<Map<String, dynamic>> getDoc() async {
-    if ( isAttachment ) {
+    
+    time = DateTime.now();
+
+    if ( msgType != "text" ) {
       // store attatchment to firebase storage
-      String URI = await service.storeAttachment(attachment);
-      return {
-        "uid": uid,
-        "attatchmentURI": URI,
-        "type": "media",
-        "time": new DateTime.now(),
-        "seen": false,
-        "sender": true
-      };
+      attatchmentURI = await service.storeAttachment(attachment);
     }
     return {
-      "uid": uid,
+      "reciever": reciever.phone,
+      "attatchmentURI": attatchmentURI,
       "message": message,
-      "type": "text",
-      "time": new DateTime.now(),
-      "seen": false,
-      "sender": true
+      "type": msgType,
+      "time": time.microsecondsSinceEpoch,
+      "seen": false
     };
   }
 

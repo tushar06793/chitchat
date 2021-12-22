@@ -1,9 +1,11 @@
+import 'package:chitchat/models/chat.dart';
 import 'package:chitchat/models/user.dart';
 import 'package:chitchat/screens/authenticate/login.dart';
 import 'package:chitchat/screens/home/chats.dart';
 import 'package:chitchat/screens/home/status.dart';
 import 'package:chitchat/screens/home/calls.dart';
 import 'package:chitchat/services/auth.dart';
+import 'package:chitchat/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,8 +17,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
 
   final AuthService _auth = AuthService();
-
+  final Service service = Service();
+  
+  late LocalUser user;
   late TabController _tabController;
+  late List<Map<String, dynamic>> chatHistory;
+  bool isLoading = false;
+  final TextEditingController _search = TextEditingController();
 
   @override
   void initState() {
@@ -25,33 +32,131 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         setState(() {});
       });
     super.initState();
+    user = _auth.castLocalUser(_auth.getUser()!)!;
+    service.setStatus(user, "Online");
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // online
+      service.setStatus(user, "Online");
+    } else {
+      // offline
+      service.setStatus(user, "Offline");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
 
-    if(_auth.getUser() == null){
+    // chatHistory = (await service.fetchHistory(user))!;
+    // print(chatHistory);
+
+    if(user == null){
       Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()));
     }
-    // ignore: unused_local_variable
-    LocalUser user = _auth.castLocalUser(_auth.getUser()!)!;
 
     return Scaffold(
         appBar: AppBar(
           title: Text('ChitChat'),
           actions: [
             IconButton(
-              onPressed: () {
-                // accept text
+              onPressed: () async {
+                showDialog(context: context, barrierDismissible: false, builder: (context) {
+                  return AlertDialog(
+                    title: Text('Search User'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        TextField(
+                          controller: _search,
+                          keyboardType: TextInputType.number,
+                        )
+                      ],
+                    ),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () async {
+                          Navigator.pop(context);
+                        },
+                        child: Text('Back'),
+                        textColor: Colors.white,
+                        color: Colors.blue,
+                      ), FlatButton(
+                        onPressed: () async {
+                          String searchNumber = _search.text.trim();
+                          if(!searchNumber.startsWith("+91")){
+                            searchNumber = "+91" + searchNumber;
+                          }
+                          LocalUser searchUser = await service.searchUser(searchNumber);
+
+                          String searchUserName = searchUser.username;
+                          String searchUserPhone = searchUser.phone;
+
+                          Navigator.pop(context);
+
+                          showDialog(context: context, barrierDismissible: false, builder: (context) {
+                            return AlertDialog(
+                              title: ChatScreen(
+                                images: 'user/tushar.jpg',
+                                title: '$searchUserName',
+                                msg: 'Aur Bhai???',
+                              ),
+                              actions: <Widget>[
+                                FlatButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('Back'),
+                                  textColor: Colors.white,
+                                  color: Colors.blue,
+                                )
+                              ],
+                            );
+                          });
+                        },
+                        child: Text('Search'),
+                        textColor: Colors.white,
+                        color: Colors.blue,
+                      )
+                    ],
+                  );
+                });
               }, 
               icon: Icon(Icons.search)
             ),
             IconButton(
               onPressed: () async {
                 // open a builder
-                await _auth.signOut();
-                Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => LoginScreen()));
+                showDialog(context: context, barrierDismissible: false, builder: (context) {
+                  return AlertDialog(
+                    title: Text('Are you sure you want to Sign Out'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                    ),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () async {
+                          Navigator.pop(context);
+                        },
+                        child: Text('No'),
+                        textColor: Colors.white,
+                        color: Colors.blue,
+                      ),
+                      FlatButton(
+                        onPressed: () async {
+                          await _auth.signOut();
+                          Navigator.push(
+                                context, MaterialPageRoute(builder: (_) => LoginScreen()));
+                        },
+                        child: Text('Yes Sign out'),
+                        textColor: Colors.white,
+                        color: Colors.red
+                      )
+                    ],
+                  );
+                });
               }, 
               icon: Icon(Icons.more_vert)
             )
