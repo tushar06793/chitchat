@@ -34,18 +34,18 @@ class Service {
     List<Chat> sendChats = [], recieveChats = [];
     
     // chats of 1-1 chatting that owner sended
-    await _firestore.collection('chatroom').doc(user.phone).collection("chats").where("phone", isEqualTo: friend.phone).get().then((SnapShot) async {
+    await _firestore.collection('chatroom').doc(user.phone).collection("chats").where("reciever", isEqualTo: friend.phone).get().then((SnapShot) async {
       for(var doc in SnapShot.docs){
         var data = doc.data();
-        sendChats.add(new Chat(user, friend, data["type"], data["time"], message: data["message"], attatchmentURI: data["attatchmentURI"]));
+        sendChats.add(new Chat(user, friend, data["type"], DateTime.fromMicrosecondsSinceEpoch(data["time"]), message: data["message"], attatchmentURI: data["attatchmentURI"]));
       }
     });
 
     // chats of 1-1 chatting that owner recieved
-    await _firestore.collection('chatroom').doc(friend.phone).collection("chats").where("phone", isEqualTo: user.phone).get().then((SnapShot) async {
+    await _firestore.collection('chatroom').doc(friend.phone).collection("chats").where("reciever", isEqualTo: user.phone).get().then((SnapShot) async {
       for(var doc in SnapShot.docs){
         var data = doc.data();
-        recieveChats.add(new Chat(friend, user, data["type"], data["time"], message: data["message"], attatchmentURI: data["attatchmentURI"]));
+        recieveChats.add(new Chat(friend, user, data["type"], DateTime.fromMicrosecondsSinceEpoch(data["time"]), message: data["message"], attatchmentURI: data["attatchmentURI"]));
       }
     });
 

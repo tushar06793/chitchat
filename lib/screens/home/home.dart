@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chitchat/models/chat.dart';
 import 'package:chitchat/models/user.dart';
 import 'package:chitchat/screens/authenticate/login.dart';
@@ -21,9 +23,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   
   late LocalUser user;
   late TabController _tabController;
-  late List<Map<String, dynamic>> chatHistory;
-  bool isLoading = false;
+  List<Map<String, dynamic>> chatHistory = [];
   final TextEditingController _search = TextEditingController();
+  Timer? timer;
+
+  void fetchHistory() async {
+    List<Map<String, dynamic>> updatedHistory = (await service.fetchHistory(user))!;
+    print(updatedHistory);
+    setState(() {
+      chatHistory = updatedHistory;  
+    });
+  }
 
   @override
   void initState() {
@@ -34,6 +44,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     super.initState();
     user = _auth.castLocalUser(_auth.getUser()!)!;
     service.setStatus(user, "Online");
+
+    timer = Timer.periodic(Duration(seconds: 10), (Timer t) => fetchHistory());
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -91,17 +109,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           }
                           LocalUser searchUser = await service.searchUser(searchNumber);
 
-                          String searchUserName = searchUser.username;
-                          String searchUserPhone = searchUser.phone;
-
                           Navigator.pop(context);
 
                           showDialog(context: context, barrierDismissible: false, builder: (context) {
                             return AlertDialog(
                               title: ChatScreen(
-                                images: 'user/tushar.jpg',
-                                title: '$searchUserName',
-                                msg: 'Aur Bhai???',
+                                friend: searchUser, 
+                                owner: user,
                               ),
                               actions: <Widget>[
                                 FlatButton(
@@ -193,25 +207,19 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             Text('chats'),
             //Chats page
             ListView.builder(
-                itemCount: 4,
+                itemCount: chatHistory.length,
                 itemBuilder: (context, index) {
+                  
+                  LocalUser friend = chatHistory[index]["friend"];
+                  Chat lastChat = chatHistory[index]["last_chat"];
+
                   return Column(
                     children: [
                       ChatScreen(
-                        images: 'user/devang.jpg',
-                        title: 'Devang More',
-                        msg: 'Aur Bhai???',
-                      ),
-                      ChatScreen(
-                        images: 'user/amit.jpg',
-                        title: 'Amit Gupta',
-                        msg: 'Bna Kya??',
-                      ),
-                      ChatScreen(
-                        images: 'user/chicken dinner.jpg',
-                        title: 'CHicken DInner',
-                        msg: 'Devang More : Arpit ko Dengue ho gya hai',
-                      ),
+                        friend: friend,
+                        owner: user,
+                        lastChat: lastChat,
+                      )
                     ],
                   );
                 }),

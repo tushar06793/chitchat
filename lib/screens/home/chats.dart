@@ -1,11 +1,30 @@
+import 'package:chitchat/models/chat.dart';
+import 'package:chitchat/models/user.dart';
 import 'package:chitchat/screens/home/Conversation.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatelessWidget {
-  final images;
-  final title;
-  final msg;
-  ChatScreen({this.images, this.title, this.msg});
+  Chat? lastChat;
+  final LocalUser owner, friend;
+  ChatScreen({this.lastChat, required this.owner, required this.friend});
+
+  Text setTime(){
+    if(lastChat != null){
+      int diffDays = DateTime.now().difference(lastChat!.time).inDays;
+      String timeText = "";
+      print(diffDays);
+      if(diffDays == 0){
+        timeText = lastChat!.time.hour.toString() + ":" + lastChat!.time.minute.toString();
+      } else if(diffDays == 1){
+        timeText = "Yesterday";
+      } else {
+        timeText = lastChat!.time.day.toString() + "/" + lastChat!.time.month.toString() + "/" + lastChat!.time.year.toString();
+      }
+      return Text(timeText);
+    }
+    return Text("");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -14,7 +33,7 @@ class ChatScreen extends StatelessWidget {
         ListTile(
           contentPadding: EdgeInsets.only(left: 5, right: 7),
           leading: CircleAvatar(
-            backgroundImage: AssetImage(images),
+            backgroundImage: friend.image != "" ? AssetImage(friend.image) : null,
           ),
           title: GestureDetector(
             onTap: () {
@@ -22,17 +41,20 @@ class ChatScreen extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ConversationScreen(
-                        images: images.toString(), title: title.toString())),
+                      owner: owner,
+                      friend: friend,
+                    ),
+                )
               );
             },
             child: Container(
-              child: Text(title),
+              child: Text(friend.username),
             ),
           ),
-          subtitle: Text(msg),
+          subtitle: lastChat != null ? Text(lastChat!.message): null,
           trailing: Column(
             children: [
-              Text('11:59'),
+              setTime(),
               Container(
                 width: 24,
                 height: 32,
