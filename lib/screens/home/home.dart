@@ -6,6 +6,7 @@ import 'package:chitchat/screens/authenticate/login.dart';
 import 'package:chitchat/screens/home/chats.dart';
 import 'package:chitchat/screens/home/status.dart';
 import 'package:chitchat/screens/home/calls.dart';
+import 'package:chitchat/screens/settings.dart';
 import 'package:chitchat/services/auth.dart';
 import 'package:chitchat/services/firebase_service.dart';
 import 'package:flutter/material.dart';
@@ -98,92 +99,104 @@ class _HomeScreenState extends State<HomeScreen>
           title: Text('ChitChat'),
           actions: [
             IconButton(
-              onPressed: () async {
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text('Search User'),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          TextField(
-                            controller: _search,
-                            keyboardType: TextInputType.number,
-                          )
-                        ],
-                      ),
-                      actions: <Widget>[
-                        FlatButton(
-                          onPressed: () async {
-                            Navigator.pop(context);
-                          },
-                          child: Text('Back'),
-                          textColor: Colors.white,
-                          color: Colors.blue,
-                        ),
-                        FlatButton(
-                          onPressed: () async {
-                            String searchNumber = _search.text.trim();
-                            if (!searchNumber.startsWith("+91")) {
-                              searchNumber = "+91" + searchNumber;
-                            }
-                            LocalUser searchUser =
-                                await service.searchUser(searchNumber);
+                onPressed: () async {
+                  showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('Search User'),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              TextField(
+                                controller: _search,
+                                keyboardType: TextInputType.number,
+                              )
+                            ],
+                          ),
+                          actions: <Widget>[
+                            FlatButton(
+                              onPressed: () async {
+                                Navigator.pop(context);
+                              },
+                              child: Text('Back'),
+                              textColor: Colors.white,
+                              color: Colors.blue,
+                            ),
+                            FlatButton(
+                              onPressed: () async {
+                                String searchNumber = _search.text.trim();
+                                if (!searchNumber.startsWith("+91")) {
+                                  searchNumber = "+91" + searchNumber;
+                                }
+                                LocalUser searchUser =
+                                    await service.searchUser(searchNumber);
 
-                            Navigator.pop(context);
+                                Navigator.pop(context);
 
-                            showDialog(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: ChatScreen(
-                                    friend: searchUser,
-                                    owner: user,
-                                  ),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                      onPressed: () async {
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text('Back'),
-                                      textColor: Colors.white,
-                                      color: Colors.blue,
-                                    )
-                                  ],
-                                );
-                              }
-                            );
-                          },
-                          child: Text('Search'),
-                          textColor: Colors.white,
-                          color: Colors.blue,
-                        )
-                      ],
-                    );
-                  }
-                );
-              },
-              icon: Icon(Icons.search)
-            ),
-            PopupMenuButton<String>(
-              itemBuilder: (BuildContext Context) {
-                return [
-                  PopupMenuItem(
-                    child: Text("Create Group"),
-                    value: "Create Group",
-                  ),
-                  PopupMenuItem(
-                    child: Text("Settings"),
-                    value: "Settings",
-                  ),
-                  PopupMenuItem(
-                    child: Text("Log out"),
-                    value: "Log out"
-                  ),
-                ];
+                                showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: ChatScreen(
+                                          friend: searchUser,
+                                          owner: user,
+                                        ),
+                                        actions: <Widget>[
+                                          FlatButton(
+                                            onPressed: () async {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('Back'),
+                                            textColor: Colors.white,
+                                            color: Colors.blue,
+                                          )
+                                        ],
+                                      );
+                                    });
+                              },
+                              child: Text('Search'),
+                              textColor: Colors.white,
+                              color: Colors.blue,
+                            )
+                          ],
+                        );
+                      });
+                },
+                icon: Icon(Icons.search)),
+            PopupMenuButton<String>(itemBuilder: (BuildContext Context) {
+              return [
+                PopupMenuItem(
+                  child: Text("Create Group"),
+                  value: "Create Group",
+                ),
+                PopupMenuItem(
+                  child: Text("Settings"),
+                  value: "Settings",
+                  onTap: () async {
+                    print("hello");
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SettingsScreen(
+                            user: user,
+                            isAdmin: true,
+                          ),
+                        ));
+                  },
+                ),
+                PopupMenuItem(
+                  child: Text("Log out"),
+                  value: "Log out",
+                  onTap: () async {
+                    await _auth.signOut();
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => LoginScreen()));
+                  },
+                ),
+              ];
             })
           ],
           bottom: TabBar(

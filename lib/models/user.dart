@@ -7,11 +7,11 @@ class LocalUser {
   late String phone;
   String profile = "";
 
-  LocalUser(String uid, String username, String phone, {String? profile}){
+  LocalUser(String uid, String username, String phone, {String? profile}) {
     this.uid = uid;
     this.username = username;
     this.phone = phone;
-    this.profile = profile != null ? (profile)! : "";
+    this.profile = profile != null ? (profile) : "";
   }
 
   Future<bool> updateName(String username) async {
