@@ -76,6 +76,12 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
+  Future getImageThroughCam() async {
+    ImagePicker _picker = ImagePicker();
+
+    await _picker.pickImage(source: ImageSource.camera);
+  }
+
   @override
   Widget build(BuildContext context) {
     // chatHistory = (await service.fetchHistory(user))!;
@@ -157,45 +163,26 @@ class _HomeScreenState extends State<HomeScreen>
                       });
                 },
                 icon: Icon(Icons.search)),
-            IconButton(
-                onPressed: () => getImage(), icon: Icon(Icons.account_circle)),
-            IconButton(
-                onPressed: () async {
-                  // open a builder
-                  showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text('Are you sure you want to Sign Out'),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                          ),
-                          actions: <Widget>[
-                            FlatButton(
-                              onPressed: () async {
-                                Navigator.pop(context);
-                              },
-                              child: Text('No'),
-                              textColor: Colors.white,
-                              color: Colors.blue,
-                            ),
-                            FlatButton(
-                                onPressed: () async {
-                                  await _auth.signOut();
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => LoginScreen()));
-                                },
-                                child: Text('Yes Sign out'),
-                                textColor: Colors.white,
-                                color: Colors.red)
-                          ],
-                        );
-                      });
-                },
-                icon: Icon(Icons.more_vert))
+            PopupMenuButton<String>(itemBuilder: (BuildContext Context) {
+              return [
+                PopupMenuItem(
+                  child: Text("New Group"),
+                  value: "New Group",
+                ),
+                PopupMenuItem(
+                  child: Text("Edit Profile Name"),
+                  value: "Edit Profile Name",
+                ),
+                PopupMenuItem(
+                  child: Text("Edit Profile Image"),
+                  value: "Edit Profile Image",
+                ),
+                PopupMenuItem(
+                  child: Text("Log out"),
+                  value: "Log out",
+                ),
+              ];
+            })
           ],
           bottom: TabBar(
             isScrollable: true,
@@ -204,11 +191,13 @@ class _HomeScreenState extends State<HomeScreen>
             indicatorPadding: EdgeInsets.all(10),
             labelPadding: EdgeInsets.all(12),
             tabs: [
-              Icon(Icons.camera_alt),
+              IconButton(
+                  onPressed: () => getImageThroughCam(),
+                  icon: Icon(Icons.camera_alt)),
               Container(
                 width: 70,
                 alignment: Alignment.center,
-                child: Text('CHATS'),
+                child: Text("CHATS"),
               ),
               Container(
                 width: 70,
