@@ -8,17 +8,23 @@ class ChatScreen extends StatelessWidget {
   final LocalUser owner, friend;
   ChatScreen({this.lastChat, required this.owner, required this.friend});
 
-  Text setTime(){
-    if(lastChat != null){
+  Text setTime() {
+    if (lastChat != null) {
       int diffDays = DateTime.now().difference(lastChat!.time).inDays;
       String timeText = "";
       print(diffDays);
-      if(diffDays == 0){
-        timeText = lastChat!.time.hour.toString() + ":" + lastChat!.time.minute.toString();
-      } else if(diffDays == 1){
+      if (diffDays == 0) {
+        timeText = lastChat!.time.hour.toString() +
+            ":" +
+            lastChat!.time.minute.toString();
+      } else if (diffDays == 1) {
         timeText = "Yesterday";
       } else {
-        timeText = lastChat!.time.day.toString() + "/" + lastChat!.time.month.toString() + "/" + lastChat!.time.year.toString();
+        timeText = lastChat!.time.day.toString() +
+            "/" +
+            lastChat!.time.month.toString() +
+            "/" +
+            lastChat!.time.year.toString();
       }
       return Text(timeText);
     }
@@ -32,26 +38,31 @@ class ChatScreen extends StatelessWidget {
         Padding(padding: const EdgeInsets.only(top: 8.0)),
         ListTile(
           contentPadding: EdgeInsets.only(left: 5, right: 7),
-          leading: CircleAvatar(
-            backgroundImage: friend.image != "" ? AssetImage(friend.image) : null,
+          leading: GestureDetector(
+            child: CircleAvatar(
+              backgroundImage:
+                  friend.image != "" ? AssetImage(friend.image) : null,
+            ),
+            onTap: () {
+              print("amit");
+            },
           ),
           title: GestureDetector(
             onTap: () {
               Navigator.push(
-                context,
-                MaterialPageRoute(
+                  context,
+                  MaterialPageRoute(
                     builder: (context) => ConversationScreen(
                       owner: owner,
                       friend: friend,
                     ),
-                )
-              );
+                  ));
             },
             child: Container(
               child: Text(friend.username),
             ),
           ),
-          subtitle: lastChat != null ? Text(lastChat!.message): null,
+          subtitle: lastChat != null ? Text(lastChat!.message) : null,
           trailing: Column(
             children: [
               setTime(),

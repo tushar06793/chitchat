@@ -6,17 +6,16 @@ import 'package:chitchat/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 
 class ConversationScreen extends StatefulWidget {
-
   LocalUser owner, friend;
 
   ConversationScreen({required this.owner, required this.friend});
 
   @override
-  _ConversationScreenState createState() => _ConversationScreenState(owner: owner, friend: friend);
+  _ConversationScreenState createState() =>
+      _ConversationScreenState(owner: owner, friend: friend);
 }
 
 class _ConversationScreenState extends State<ConversationScreen> {
-
   Service service = Service();
   LocalUser owner, friend;
 
@@ -28,7 +27,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   void fetchNewChats() async {
     List<Chat> updatedChats = (await service.fetchChats(owner, friend))!;
-    updatedChats.sort((Chat a, Chat b) => a.time.microsecondsSinceEpoch.compareTo(b.time.microsecondsSinceEpoch));
+    updatedChats.sort((Chat a, Chat b) =>
+        a.time.microsecondsSinceEpoch.compareTo(b.time.microsecondsSinceEpoch));
     print(updatedChats);
     setState(() {
       chats = updatedChats;
@@ -50,7 +50,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   void onSendMessage() async {
     if (_message.text.isNotEmpty) {
-      Chat chat = new Chat(owner, friend, "text", DateTime.now(), message: _message.text.trim());
+      Chat chat = new Chat(owner, friend, "text", DateTime.now(),
+          message: _message.text.trim());
       _message.clear();
       await service.sendChat(chat);
       fetchNewChats();
@@ -105,9 +106,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                         controller: _message,
                         decoration: InputDecoration(
                             suffixIcon: IconButton(
-                              onPressed: () {
-
-                              },
+                              onPressed: () {},
                               icon: Icon(Icons.photo),
                             ),
                             hintText: "Send Message",
@@ -116,7 +115,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                             )),
                       ),
                     ),
-                    IconButton(icon: Icon(Icons.send), onPressed: onSendMessage),
+                    IconButton(
+                        icon: Icon(Icons.send), onPressed: onSendMessage),
                   ],
                 ),
               ),
@@ -127,13 +127,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
   }
 
-  Widget messages(Size size, Chat chat, LocalUser owner, LocalUser friend, BuildContext context) {
-    // return chat.msgType == "text" ?
+  Widget messages(Size size, Chat chat, LocalUser owner, LocalUser friend,
+      BuildContext context) {
+    //return chat.msgType == "text" ?
     return Container(
       width: size.width,
-      alignment: chat.owner == owner
-        ? Alignment.centerRight
-        : Alignment.centerLeft,
+      alignment:
+          chat.owner == owner ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
         margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
@@ -151,34 +151,5 @@ class _ConversationScreenState extends State<ConversationScreen> {
         ),
       ),
     );
-    // : Container(
-    //   height: size.height / 2.5,
-    //   width: size.width,
-    //   padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-    //   alignment: chat.owner == owner
-    //       ? Alignment.centerRight
-    //       : Alignment.centerLeft,
-    //   child: InkWell(
-    //     onTap: () => Navigator.of(context).push(
-    //       MaterialPageRoute(
-    //         builder: (_) => ShowImage(
-    //           imageUrl: map['message'],
-    //         ),
-    //       ),
-    //     ),
-    //     child: Container(
-    //       height: size.height / 2.5,
-    //       width: size.width / 2,
-    //       decoration: BoxDecoration(border: Border.all()),
-    //       alignment: map['message'] != "" ? null : Alignment.center,
-    //       child: map['message'] != ""
-    //         ? Image.network(
-    //             map['message'],
-    //             fit: BoxFit.cover,
-    //           )
-    //         : CircularProgressIndicator(),
-    //     ),
-    //   ),
-    // );
   }
 }
