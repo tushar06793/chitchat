@@ -23,7 +23,7 @@ class GroupChat {
   Future<Map<String, dynamic>> getDoc(DateTime time) async {
     if ( isAttachment ) {
       // store attatchment to firebase storage
-      String URI = await service.storeAttachment(attachment);
+      String URI = (await service.uploadFile(attachment))!;
       return {
         "uid": uid,
         "sendby": owner.phone,

@@ -40,8 +40,7 @@ class ChatScreen extends StatelessWidget {
           contentPadding: EdgeInsets.only(left: 5, right: 7),
           leading: GestureDetector(
             child: CircleAvatar(
-              backgroundImage:
-                  friend.image != "" ? AssetImage(friend.image) : null,
+              backgroundImage: friend.profile != "" ? AssetImage(friend.profile) : null,
             ),
             onTap: () {
               print("amit");

@@ -52,6 +52,7 @@ class AuthService {
           "phone": number,
           "status": "Unavalible",
           "uid": _auth.currentUser!.uid,
+          "profile": ""
         });
 
         Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
@@ -94,6 +95,7 @@ class AuthService {
                     "phone": number,
                     "status": "Unavalible",
                     "uid": _auth.currentUser!.uid,
+                    "profile": ""
                   });
 
                   Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));

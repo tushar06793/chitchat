@@ -28,7 +28,7 @@ class Chat {
 
     if ( msgType != "text" ) {
       // store attatchment to firebase storage
-      attatchmentURI = await service.storeAttachment(attachment);
+      attatchmentURI = (await service.uploadFile(attachment))!;
     }
     return {
       "reciever": reciever.phone,

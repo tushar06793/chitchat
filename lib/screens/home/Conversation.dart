@@ -67,7 +67,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: CircleAvatar(
-          backgroundImage: friend.image != "" ? AssetImage(friend.image) : null,
+          backgroundImage: friend.profile != "" ? AssetImage(friend.profile) : null,
         ),
         title: Text(friend.username),
         actions: [
