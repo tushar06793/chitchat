@@ -1,8 +1,10 @@
+import 'package:chitchat/services/firebase_service.dart';
+
 class LocalUser {
   late String uid;
   late String username;
   late String phone;
-  String image = "";
+  String profile = "";
 
   LocalUser(String uid, String username, String phone){
     this.uid = uid;
@@ -10,7 +12,9 @@ class LocalUser {
     this.phone = phone;
   }
 
-  void setImage(String image){
-    this.image = image;
+  Future<bool> updateUser(String username, String profile) async {
+    this.profile = profile;
+    this.username = username;
+    return await Service().updateUser(this);
   }
 }

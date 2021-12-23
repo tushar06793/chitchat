@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:chitchat/models/group_chat.dart';
 import 'package:chitchat/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
 
 import 'package:chitchat/models/chat.dart';
 
@@ -9,6 +12,16 @@ class Service {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
+
+  Future<bool> updateUser(LocalUser user) async {
+    await _firestore.collection('users').doc(user.phone).update({
+      "name": user.username,
+      "profile": user.profile 
+    }).catchError((error) {
+      return false;
+    });
+    return true;
+  }
 
   Future<List<Map<String, dynamic>>?> fetchHistory(LocalUser user) async {
     List<Map<String, dynamic>> chats = [];
@@ -90,14 +103,18 @@ class Service {
 
   Future<bool> sendGroupChat(GroupChat chat) async {
     Map<String, dynamic> doc = await chat.getDoc(new DateTime.now());
-
-
     return true;
   }
 
-  Future<String> storeAttachment(var attachment) async {
+  Future<String?> uploadFile(File file) async {
     // save it on firebase storage
-    return "Not yet Implmented";
+    String fileName = Uuid().v1();
+    String extension = file.path.split(".").last;
+    var ref = _storage.ref().child('files').child("$fileName.$extension");
+    var uploadTask = await ref.putFile(file).catchError((error) async {
+      return null;
+    });
+    return await uploadTask.ref.getDownloadURL();
   }
 
 

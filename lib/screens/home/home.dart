@@ -67,13 +67,14 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future getImage() async {
-    var dp;
+    XFile dp;
     ImagePicker _picker = ImagePicker();
 
-    dp = await _picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      user.image = dp;
-    });
+    dp = (await _picker.pickImage(source: ImageSource.gallery))!;
+    print(dp.path);
+    // setState(() {
+    //   user.image = dp;
+    // });
   }
 
   Future getImageThroughCam() async {
