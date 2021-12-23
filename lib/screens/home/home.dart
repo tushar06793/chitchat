@@ -166,35 +166,35 @@ class _HomeScreenState extends State<HomeScreen>
                       });
                 },
                 icon: Icon(Icons.search)),
-            PopupMenuButton<String>(itemBuilder: (BuildContext Context) {
+            PopupMenuButton<String>(
+              onSelected: (value) async {
+                if(value == "Settings"){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SettingsScreen(
+                        user: user,
+                        isAdmin: true,
+                      ),
+                  ));
+                } else if(value == "Log out") {
+                  await _auth.signOut();
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()));
+                }
+              },
+              itemBuilder: (BuildContext Context) {
               return [
                 PopupMenuItem(
                   child: Text("Create Group"),
                   value: "Create Group",
                 ),
-                PopupMenuItem(
+                PopupMenuItem<String>(
                   child: Text("Settings"),
                   value: "Settings",
-                  onTap: () async {
-                    print("hello");
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SettingsScreen(
-                            user: user,
-                            isAdmin: true,
-                          ),
-                        ));
-                  },
                 ),
                 PopupMenuItem(
                   child: Text("Log out"),
-                  value: "Log out",
-                  onTap: () async {
-                    await _auth.signOut();
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => LoginScreen()));
-                  },
+                  value: "Log out"
                 ),
               ];
             })
