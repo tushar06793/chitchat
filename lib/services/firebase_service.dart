@@ -1,25 +1,24 @@
 import 'dart:io';
-
-import 'package:chitchat/models/group_chat.dart';
-import 'package:chitchat/models/user.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:chitchat/models/user.dart';
 import 'package:chitchat/models/chat.dart';
+import 'package:chitchat/models/group_chat.dart';
 
 class Service {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  Future<bool> updateUser(LocalUser user) async {
-    await _firestore.collection('users').doc(user.phone).update({
-      "name": user.username,
-      "profile": user.profile 
-    }).catchError((error) {
-      return false;
-    });
+  Future<bool> updateName(LocalUser user) async {
+    await _firestore.collection('users').doc(user.phone).update({ "name": user.username });
+    return true;
+  }
+
+  Future<bool> updateProfile(LocalUser user) async {
+    await _firestore.collection('users').doc(user.phone).update({ "profile": user.profile });
     return true;
   }
 
@@ -74,7 +73,7 @@ class Service {
   Future<LocalUser> searchUser(String phoneNumber) async {
     var value = await _firestore.collection('users').where("phone", isEqualTo: phoneNumber).get();
     var doc = value.docs[0].data();
-    return LocalUser(doc['uid'], doc['name'], phoneNumber);
+    return LocalUser(doc['uid'], doc['name'], phoneNumber, profile: doc["profile"]);
   }
 
   Future<bool> sendChat(Chat chat) async {

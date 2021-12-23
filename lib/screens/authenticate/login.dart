@@ -109,22 +109,22 @@ class _LoginScreenState extends State<LoginScreen> {
           SizedBox(
             height: 50.0,
           ),
-          RaisedButton(
-            child: Text('Sign in anom'),
-            onPressed: () async {
+          // RaisedButton(
+          //   child: Text('Sign in anom'),
+          //   onPressed: () async {
 
-              await _auth.signInAnom().then((user) {
-                if (user != null) {
-                  print("Login Sucessfull");
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => HomeScreen()));
-                } else {
-                  print("Login Failed");
-                }
-              });
+          //     await _auth.signInAnom().then((user) {
+          //       if (user != null) {
+          //         print("Login Sucessfull");
+          //         Navigator.push(
+          //             context, MaterialPageRoute(builder: (_) => HomeScreen()));
+          //       } else {
+          //         print("Login Failed");
+          //       }
+          //     });
 
-            },
-          ),
+          //   },
+          // ),
         ],
       ),
     );

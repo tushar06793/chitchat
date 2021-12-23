@@ -20,16 +20,24 @@ class AuthService {
     return _auth.currentUser;
   }
 
+  Future fetchProfile(LocalUser user) async {
+    await _firestore.collection('users').doc(user.phone).get().then((snapshot) {
+      var data = snapshot.data();
+      user.profile = data!["profile"];
+    });
+  }
+
   // sign in anom
   Future<User?> signInAnom() async {
-    try{
-      UserCredential userCredential = await _auth.signInAnonymously();
-      print("Login succesfullly");
-      return userCredential.user;
-    } catch (e) {
-      print(e);
-      return null;
-    }
+    return null;
+    // try{
+    //   UserCredential userCredential = await _auth.signInAnonymously();
+    //   print("Login succesfullly");
+    //   return userCredential.user;
+    // } catch (e) {
+    //   print(e);
+    //   return null;
+    // }
   }
 
   // sign in with phone number
@@ -47,12 +55,25 @@ class AuthService {
 
         print("Login successfully");
 
-        await _firestore.collection('users').doc(number).set({
-          "name": name,
-          "phone": number,
-          "status": "Unavalible",
-          "uid": _auth.currentUser!.uid,
-          "profile": ""
+        await _firestore.collection('users').doc(number).get().then((snapshot) async {
+          if(snapshot.exists){
+            var data = snapshot.data();
+            await _firestore.collection('users').doc(number).set({
+              "name": name,
+              "phone": number,
+              "status": "Unavalible",
+              "uid": _auth.currentUser!.uid,
+              "profile": data!["profile"]
+            });
+          } else {
+            await _firestore.collection('users').doc(number).set({
+              "name": name,
+              "phone": number,
+              "status": "Unavalible",
+              "uid": _auth.currentUser!.uid,
+              "profile": ""
+            });
+          }
         });
 
         Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
@@ -90,12 +111,25 @@ class AuthService {
 
                   print("Login successfully");
 
-                  await _firestore.collection('users').doc(number).set({
-                    "name": name,
-                    "phone": number,
-                    "status": "Unavalible",
-                    "uid": _auth.currentUser!.uid,
-                    "profile": ""
+                  await _firestore.collection('users').doc(number).get().then((snapshot) async {
+                    if(snapshot.exists){
+                      var data = snapshot.data();
+                      await _firestore.collection('users').doc(number).set({
+                        "name": name,
+                        "phone": number,
+                        "status": "Unavalible",
+                        "uid": _auth.currentUser!.uid,
+                        "profile": data!["profile"]
+                      });
+                    } else {
+                      await _firestore.collection('users').doc(number).set({
+                        "name": name,
+                        "phone": number,
+                        "status": "Unavalible",
+                        "uid": _auth.currentUser!.uid,
+                        "profile": ""
+                      });
+                    }
                   });
 
                   Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
