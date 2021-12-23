@@ -11,7 +11,7 @@ class LocalUser {
     this.uid = uid;
     this.username = username;
     this.phone = phone;
-    this.profile = (profile)!;
+    this.profile = profile != null ? (profile)! : "";
   }
 
   Future<bool> updateName(String username) async {
