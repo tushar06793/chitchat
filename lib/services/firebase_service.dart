@@ -30,14 +30,14 @@ class Service {
     return chats;
   }
 
-  Future<List<List<Chat>>?> fetchChats(LocalUser user, LocalUser friend) async {
-    List<Chat> sendChats = [], recieveChats = [];
+  Future<List<Chat>?> fetchChats(LocalUser user, LocalUser friend) async {
+    List<Chat> chats = [];
     
     // chats of 1-1 chatting that owner sended
     await _firestore.collection('chatroom').doc(user.phone).collection("chats").where("reciever", isEqualTo: friend.phone).get().then((SnapShot) async {
       for(var doc in SnapShot.docs){
         var data = doc.data();
-        sendChats.add(new Chat(user, friend, data["type"], DateTime.fromMicrosecondsSinceEpoch(data["time"]), message: data["message"], attatchmentURI: data["attatchmentURI"]));
+        chats.add(Chat(user, friend, data["type"], DateTime.fromMicrosecondsSinceEpoch(data["time"]), message: data["message"], attatchmentURI: data["attatchmentURI"]));
       }
     });
 
@@ -45,11 +45,11 @@ class Service {
     await _firestore.collection('chatroom').doc(friend.phone).collection("chats").where("reciever", isEqualTo: user.phone).get().then((SnapShot) async {
       for(var doc in SnapShot.docs){
         var data = doc.data();
-        recieveChats.add(new Chat(friend, user, data["type"], DateTime.fromMicrosecondsSinceEpoch(data["time"]), message: data["message"], attatchmentURI: data["attatchmentURI"]));
+        chats.add(Chat(friend, user, data["type"], DateTime.fromMicrosecondsSinceEpoch(data["time"]), message: data["message"], attatchmentURI: data["attatchmentURI"]));
       }
     });
 
-    return [sendChats, recieveChats];
+    return chats;
   }
 
   Future setStatus(LocalUser user, String status) async {

@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     super.initState();
     user = _auth.castLocalUser(_auth.getUser()!)!;
     service.setStatus(user, "Online");
-
+    fetchHistory();
     timer = Timer.periodic(Duration(seconds: 10), (Timer t) => fetchHistory());
   }
 
