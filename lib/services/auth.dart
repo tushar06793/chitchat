@@ -20,10 +20,11 @@ class AuthService {
     return _auth.currentUser;
   }
 
-  Future fetchProfile(LocalUser user) async {
+  Future fetchUser(LocalUser user) async {
     await _firestore.collection('users').doc(user.phone).get().then((snapshot) {
       var data = snapshot.data();
-      user.profile = data!["profile"];
+      user.username = data!["name"];
+      user.profile = data["profile"];
     });
   }
 

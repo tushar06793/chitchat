@@ -1,11 +1,12 @@
 import 'package:chitchat/models/user.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chitchat/services/firebase_service.dart';
 
 import 'package:flutter/material.dart';
 
 class SettingsScreen extends StatefulWidget {
   final LocalUser user;
   final bool isAdmin;
+
   SettingsScreen({required this.user, required this.isAdmin});
 
   @override
@@ -16,15 +17,12 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final LocalUser user;
   final bool isAdmin;
+
   final _newUsername = TextEditingController();
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  final Service service = Service();
+  
   _SettingsScreenState({required this.user, required this.isAdmin});
-  void setUsername(String username) async {
-    await _firestore
-        .collection("users")
-        .doc(user.phone)
-        .update({"name": username});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +67,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           color: Colors.blue,
                         ),
                         FlatButton(
-                          onPressed: () => setUsername(_newUsername.text),
+                          onPressed: () async {
+                            user.username = _newUsername.text.trim();
+                            await service.updateName(user);
+                          },
                           child: Text('Change'),
                           textColor: Colors.white,
                           color: Colors.blue,

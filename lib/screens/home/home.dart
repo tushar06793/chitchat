@@ -6,7 +6,7 @@ import 'package:chitchat/screens/authenticate/login.dart';
 import 'package:chitchat/screens/home/chats.dart';
 import 'package:chitchat/screens/home/status.dart';
 import 'package:chitchat/screens/home/calls.dart';
-import 'package:chitchat/screens/settings.dart';
+import 'package:chitchat/screens/settings/settings.dart';
 import 'package:chitchat/services/auth.dart';
 import 'package:chitchat/services/firebase_service.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen>
       });
     super.initState();
     user = _auth.castLocalUser(_auth.getUser()!)!;
-    _auth.fetchProfile(user);
+    _auth.fetchUser(user);
     service.setStatus(user, "Online");
     fetchHistory();
     timer = Timer.periodic(Duration(seconds: 10), (Timer t) => fetchHistory());
