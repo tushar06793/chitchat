@@ -166,23 +166,22 @@ class _HomeScreenState extends State<HomeScreen>
                       });
                 },
                 icon: Icon(Icons.search)),
-            PopupMenuButton<String>(
-              onSelected: (value) async {
-                if(value == "Settings"){
-                  Navigator.push(
+            PopupMenuButton<String>(onSelected: (value) async {
+              if (value == "Settings") {
+                Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => SettingsScreen(
                         user: user,
                         isAdmin: true,
                       ),
-                  ));
-                } else if(value == "Log out") {
-                  await _auth.signOut();
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()));
-                }
-              },
-              itemBuilder: (BuildContext Context) {
+                    ));
+              } else if (value == "Log out") {
+                await _auth.signOut();
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => LoginScreen()));
+              }
+            }, itemBuilder: (BuildContext Context) {
               return [
                 PopupMenuItem(
                   child: Text("Create Group"),
@@ -192,10 +191,7 @@ class _HomeScreenState extends State<HomeScreen>
                   child: Text("Settings"),
                   value: "Settings",
                 ),
-                PopupMenuItem(
-                  child: Text("Log out"),
-                  value: "Log out"
-                ),
+                PopupMenuItem(child: Text("Log out"), value: "Log out"),
               ];
             })
           ],
