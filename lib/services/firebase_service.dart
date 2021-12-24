@@ -73,7 +73,7 @@ class Service {
   Future<LocalUser> searchUser(String phoneNumber) async {
     var value = await _firestore.collection('users').where("phone", isEqualTo: phoneNumber).get();
     var doc = value.docs[0].data();
-    return LocalUser(doc['uid'], doc['name'], phoneNumber, profile: doc["profile"]);
+    return LocalUser(doc['uid'], doc['name'], phoneNumber, doc["profile"]);
   }
 
   Future<bool> sendChat(Chat chat) async {

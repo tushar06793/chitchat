@@ -28,12 +28,15 @@ class _HomeScreenState extends State<HomeScreen>
   final TextEditingController _search = TextEditingController();
   Timer? timer;
 
-  void fetchHistory() async {
+  void updateUI() async {
+    LocalUser updatedUser = await _auth.fetchUser(user);
     List<Map<String, dynamic>> updatedHistory =
         (await service.fetchHistory(user))!;
-    print(updatedHistory);
+
+    
     setState(() {
       chatHistory = updatedHistory;
+      user = updatedUser;
     });
   }
 
@@ -45,10 +48,9 @@ class _HomeScreenState extends State<HomeScreen>
       });
     super.initState();
     user = _auth.castLocalUser(_auth.getUser()!)!;
-    _auth.fetchUser(user);
     service.setStatus(user, "Online");
-    fetchHistory();
-    timer = Timer.periodic(Duration(seconds: 10), (Timer t) => fetchHistory());
+    updateUI();
+    timer = Timer.periodic(Duration(seconds: 10), (Timer t) => updateUI());
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chitchat/models/user.dart';
+import 'package:chitchat/services/auth.dart';
 import 'package:chitchat/services/firebase_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -21,34 +22,30 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final LocalUser user;
+  LocalUser user;
   final bool isAdmin;
 
   final _newUsername = TextEditingController();
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final Service service = Service();
+  final AuthService _auth = AuthService();
 
   File? imageFile;
 
   Future getImage() async {
     ImagePicker _picker = ImagePicker();
 
-    await _picker.pickImage(source: ImageSource.gallery).then((xFile) {
+    await _picker.pickImage(source: ImageSource.gallery).then((xFile) async {
       if (xFile != null) {
         imageFile = File(xFile.path);
-        uploadProfile();
+        await user.updateProfile(imageFile!);
+        LocalUser updatedUser = await _auth.fetchUser(user);
+
+        setState(() {
+          user = updatedUser;      
+        });
+
       }
     });
-  }
-
-  Future uploadProfile() async {
-    String filename = Uuid().v1();
-    var ref =
-        FirebaseStorage.instance.ref().child('images').child("$filename.jpg");
-    var uploadTask = await ref.putFile(imageFile!);
-    String imageUrl = await uploadTask.ref.getDownloadURL();
-
-    print(imageUrl);
   }
 
   _SettingsScreenState({required this.user, required this.isAdmin});

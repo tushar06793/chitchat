@@ -5,13 +5,13 @@ class LocalUser {
   late String uid;
   late String username;
   late String phone;
-  String profile = "";
+  late String profile;
 
-  LocalUser(String uid, String username, String phone, {String? profile}) {
+  LocalUser(String uid, String username, String phone, String profile) {
     this.uid = uid;
     this.username = username;
     this.phone = phone;
-    this.profile = profile != null ? profile : "";
+    this.profile = profile;
   }
 
   Future<bool> updateName(String username) async {

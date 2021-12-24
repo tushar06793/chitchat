@@ -10,22 +10,24 @@ class AuthService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   static String name = "Random";
+  static String defaultProfile = "https://firebasestorage.googleapis.com/v0/b/droidrush2k21.appspot.com/o/images%2Fb1b0e300-64e9-11ec-a681-7b763fc31418.jpg?alt=media&token=8bbc812e-6dc6-417d-986f-5cbbd53a428d";
 
   // cast Firebase User to custom user class
   LocalUser? castLocalUser(User user){
-    return user != null ? LocalUser(user.uid, name, user.phoneNumber!) : null;
+    return user != null ? LocalUser(user.uid, name, user.phoneNumber!, defaultProfile) : null;
   }
 
   User? getUser() {
     return _auth.currentUser;
   }
 
-  Future fetchUser(LocalUser user) async {
+  Future<LocalUser> fetchUser(LocalUser user) async {
     await _firestore.collection('users').doc(user.phone).get().then((snapshot) {
       var data = snapshot.data();
       user.username = data!["name"];
       user.profile = data["profile"];
     });
+    return user;
   }
 
   // sign in anom
@@ -72,7 +74,7 @@ class AuthService {
               "phone": number,
               "status": "Unavalible",
               "uid": _auth.currentUser!.uid,
-              "profile": ""
+              "profile": defaultProfile
             });
           }
         });
@@ -128,7 +130,7 @@ class AuthService {
                         "phone": number,
                         "status": "Unavalible",
                         "uid": _auth.currentUser!.uid,
-                        "profile": ""
+                        "profile": defaultProfile
                       });
                     }
                   });
