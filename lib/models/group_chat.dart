@@ -2,45 +2,35 @@ import 'package:chitchat/models/user.dart';
 import 'package:chitchat/services/firebase_service.dart';
 
 class GroupChat {
-  late String uid;
+  late String guid;
   late LocalUser owner;
-  late List<LocalUser> recievers;
   late String message;
-  late bool isAttachment;
-  late var attachment;
+  late String msgType = "text";
+  late String attatchmentURI;
+  late DateTime time;
 
   final Service service = Service();
 
-  GroupChat(String uid, LocalUser owner, List<LocalUser> recievers, String message, {bool isAttachment = false, var attachment = null}){
-    this.uid = uid;
+  GroupChat(String guid, LocalUser owner, String msgType, DateTime time, {String message = "", String attatchmentURI = ""}){
+    this.guid = guid;
     this.owner = owner;
-    this.recievers = recievers;
+    this.msgType = msgType;
     this.message = message;
-    this.isAttachment = isAttachment;
-    this.attachment = attachment;
+    this.attatchmentURI = attatchmentURI;
+    this.time = time;
   }
 
-  Future<Map<String, dynamic>> getDoc(DateTime time) async {
-    if ( isAttachment ) {
-      // store attatchment to firebase storage
-      String URI = (await service.uploadFile(attachment))!;
-      return {
-        "uid": uid,
-        "sendby": owner.phone,
-        "attatchmentURI": URI,
-        "type": "media",
-        "time": time,
-      };
-    }
+  Future<Map<String, dynamic>> getDoc() async {
+
+    time = DateTime.now();
+
     return {
-      "uid": uid,
-      "sendby": owner.phone,
+      "guid": guid,
+      "owner": owner.phone,
+      "attatchmentURI": attatchmentURI,
       "message": message,
-      "type": "text",
-      "time": time,
+      "type": msgType,
+      "time": time.microsecondsSinceEpoch
     };
   }
-
-  // Chat cast()
-
 }

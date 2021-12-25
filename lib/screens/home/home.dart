@@ -132,31 +132,33 @@ class _HomeScreenState extends State<HomeScreen>
                                   searchNumber = "+91" + searchNumber;
                                 }
                                 LocalUser searchUser =
-                                    await service.searchUser(searchNumber);
+                                    (await service.searchUser(searchNumber))!;
 
                                 Navigator.pop(context);
-
-                                showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: ChatScreen(
-                                          friend: searchUser,
-                                          owner: user,
-                                        ),
-                                        actions: <Widget>[
-                                          FlatButton(
-                                            onPressed: () async {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text('Back'),
-                                            textColor: Colors.white,
-                                            color: Colors.blue,
-                                          )
-                                        ],
-                                      );
-                                    });
+                                
+                                if(searchUser != null){
+                                  showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: ChatScreen(
+                                            friend: searchUser,
+                                            owner: user,
+                                          ),
+                                          actions: <Widget>[
+                                            FlatButton(
+                                              onPressed: () async {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text('Back'),
+                                              textColor: Colors.white,
+                                              color: Colors.blue,
+                                            )
+                                          ],
+                                        );
+                                      });
+                                }
                               },
                               child: Text('Search'),
                               textColor: Colors.white,
@@ -200,10 +202,8 @@ class _HomeScreenState extends State<HomeScreen>
                           FlatButton(
                               onPressed: () async {
                                 await _auth.signOut();
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => LoginScreen()));
+                                Navigator.pop(context);
+                                setState(() {});
                               },
                               child: Text('Yes Sign out'),
                               textColor: Colors.white,
@@ -336,31 +336,33 @@ class _HomeScreenState extends State<HomeScreen>
                                   searchNumber = "+91" + searchNumber;
                                 }
                                 LocalUser searchUser =
-                                    await service.searchUser(searchNumber);
+                                    (await service.searchUser(searchNumber))!;
 
                                 Navigator.pop(context);
 
-                                showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: ChatScreen(
-                                          friend: searchUser,
-                                          owner: user,
-                                        ),
-                                        actions: <Widget>[
-                                          FlatButton(
-                                            onPressed: () async {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text('Back'),
-                                            textColor: Colors.white,
-                                            color: Colors.blue,
-                                          )
-                                        ],
-                                      );
-                                    });
+                                if(searchUser != null){
+                                  showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: ChatScreen(
+                                            friend: searchUser,
+                                            owner: user,
+                                          ),
+                                          actions: <Widget>[
+                                            FlatButton(
+                                              onPressed: () async {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text('Back'),
+                                              textColor: Colors.white,
+                                              color: Colors.blue,
+                                            )
+                                          ],
+                                        );
+                                      });
+                                }
                               },
                               child: Text('Search'),
                               textColor: Colors.white,
