@@ -7,7 +7,8 @@ class LocalUser {
   late String phone;
   late String profile;
 
-  LocalUser(String uid, String username, String phone, String profile) {
+  LocalUser(
+      String uid, String username, String phone, String profile, String st) {
     this.uid = uid;
     this.username = username;
     this.phone = phone;

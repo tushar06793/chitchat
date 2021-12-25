@@ -63,9 +63,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Stack(
               children: [
                 Padding(padding: const EdgeInsets.only(top: 10.0)),
-                CircleAvatar(
-                  backgroundImage: NetworkImage(user.profile),
-                  radius: 90,
+                GestureDetector(
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => ShowImage(
+                        imageUrl: user.profile,
+                      ),
+                    ),
+                  ),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(user.profile),
+                    radius: 90,
+                  ),
                 ),
                 Positioned(
                   right: 10,
@@ -147,6 +156,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ShowImage extends StatelessWidget {
+  final String imageUrl;
+
+  const ShowImage({required this.imageUrl, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      body: Container(
+        height: size.height,
+        width: size.width,
+        color: Colors.black,
+        child: Image.network(imageUrl),
       ),
     );
   }

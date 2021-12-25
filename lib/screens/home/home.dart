@@ -33,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen>
     List<Map<String, dynamic>> updatedHistory =
         (await service.fetchHistory(user))!;
 
-    
     setState(() {
       chatHistory = updatedHistory;
       user = updatedUser;
@@ -42,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void initState() {
-    _tabController = new TabController(length: 4, initialIndex: 1, vsync: this)
+    _tabController = new TabController(length: 3, initialIndex: 1, vsync: this)
       ..addListener(() {
         setState(() {});
       });
@@ -179,9 +178,39 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ));
               } else if (value == "Log out") {
-                await _auth.signOut();
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => LoginScreen()));
+                // open a builder
+                showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('Are you sure you want to Sign Out'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                        ),
+                        actions: <Widget>[
+                          FlatButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                            },
+                            child: Text('No'),
+                            textColor: Colors.white,
+                            color: Colors.blue,
+                          ),
+                          FlatButton(
+                              onPressed: () async {
+                                await _auth.signOut();
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => LoginScreen()));
+                              },
+                              child: Text('Yes Sign out'),
+                              textColor: Colors.white,
+                              color: Colors.red)
+                        ],
+                      );
+                    });
               }
             }, itemBuilder: (BuildContext Context) {
               return [
@@ -204,9 +233,6 @@ class _HomeScreenState extends State<HomeScreen>
             indicatorPadding: EdgeInsets.all(10),
             labelPadding: EdgeInsets.all(12),
             tabs: [
-              IconButton(
-                  onPressed: () => getImageThroughCam(),
-                  icon: Icon(Icons.camera_alt)),
               Container(
                 width: 70,
                 alignment: Alignment.center,
@@ -228,7 +254,6 @@ class _HomeScreenState extends State<HomeScreen>
         body: TabBarView(
           controller: _tabController,
           children: [
-            Text('chats'),
             //Chats page
             ListView.builder(
                 itemCount: chatHistory.length,
@@ -279,12 +304,77 @@ class _HomeScreenState extends State<HomeScreen>
         ),
         floatingActionButton: _tabController.index == 1
             ? FloatingActionButton(
-                onPressed: () {},
+                onPressed: () async {
+                  showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('Search User'),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              TextField(
+                                controller: _search,
+                                keyboardType: TextInputType.number,
+                              )
+                            ],
+                          ),
+                          actions: <Widget>[
+                            FlatButton(
+                              onPressed: () async {
+                                Navigator.pop(context);
+                              },
+                              child: Text('Back'),
+                              textColor: Colors.white,
+                              color: Colors.blue,
+                            ),
+                            FlatButton(
+                              onPressed: () async {
+                                String searchNumber = _search.text.trim();
+                                if (!searchNumber.startsWith("+91")) {
+                                  searchNumber = "+91" + searchNumber;
+                                }
+                                LocalUser searchUser =
+                                    await service.searchUser(searchNumber);
+
+                                Navigator.pop(context);
+
+                                showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: ChatScreen(
+                                          friend: searchUser,
+                                          owner: user,
+                                        ),
+                                        actions: <Widget>[
+                                          FlatButton(
+                                            onPressed: () async {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('Back'),
+                                            textColor: Colors.white,
+                                            color: Colors.blue,
+                                          )
+                                        ],
+                                      );
+                                    });
+                              },
+                              child: Text('Search'),
+                              textColor: Colors.white,
+                              color: Colors.blue,
+                            )
+                          ],
+                        );
+                      });
+                },
                 backgroundColor: Theme.of(context).primaryColorLight,
                 child: Icon(Icons.message),
               )
             : FloatingActionButton(
-                onPressed: () {},
+                onPressed: () => getImageThroughCam(),
                 backgroundColor: Theme.of(context).primaryColorLight,
                 child: Icon(Icons.camera_alt),
               ));

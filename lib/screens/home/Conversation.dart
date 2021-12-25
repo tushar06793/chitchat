@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:chitchat/models/chat.dart';
 import 'package:chitchat/models/user.dart';
 import 'package:chitchat/services/firebase_service.dart';
@@ -35,7 +34,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       if (xFile != null) {
         imageFile = File(xFile.path);
         String URI = (await service.uploadFile(imageFile))!;
-        service.sendChat(new Chat(owner, friend, "image", new DateTime.now(),
+        service.sendChat(new Chat(owner, friend, "img", new DateTime.now(),
             attatchmentURI: URI));
       }
     });

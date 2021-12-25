@@ -40,7 +40,8 @@ class ChatScreen extends StatelessWidget {
           contentPadding: EdgeInsets.only(left: 5, right: 7),
           leading: GestureDetector(
             child: CircleAvatar(
-              backgroundImage: friend.profile != "" ? AssetImage(friend.profile) : null,
+              backgroundImage:
+                  friend.profile != "" ? AssetImage(friend.profile) : null,
             ),
             onTap: () {
               print("amit");
@@ -48,14 +49,12 @@ class ChatScreen extends StatelessWidget {
           ),
           title: GestureDetector(
             onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ConversationScreen(
-                      owner: owner,
-                      friend: friend,
-                    ),
-                  ));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) =>
+                      ConversationScreen(owner: owner, friend: friend),
+                ),
+              );
             },
             child: Container(
               child: Text(friend.username),

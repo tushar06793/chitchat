@@ -43,11 +43,11 @@ class Service {
         chats.add({
           "friend": friend,
           "last_chat": data["last_sender"]
-              ? new Chat(user, friend, data["last_chat_type"],
+              ? Chat(user, friend, data["last_chat_type"],
                   DateTime.fromMicrosecondsSinceEpoch(data["last_chat_time"]),
                   message: data["last_chat_message"],
                   attatchmentURI: data["last_chat_URI"])
-              : new Chat(friend, user, data["last_chat_type"],
+              : Chat(friend, user, data["last_chat_type"],
                   DateTime.fromMicrosecondsSinceEpoch(data["last_chat_time"]),
                   message: data["last_chat_message"],
                   attatchmentURI: data["last_chat_URI"])
@@ -108,7 +108,8 @@ class Service {
         .where("phone", isEqualTo: phoneNumber)
         .get();
     var doc = value.docs[0].data();
-    return LocalUser(doc['uid'], doc['name'], phoneNumber, doc["profile"]);
+    return LocalUser(
+        doc['uid'], doc['name'], phoneNumber, doc["profile"], doc["status"]);
   }
 
   Future<bool> sendChat(Chat chat) async {

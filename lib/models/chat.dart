@@ -11,17 +11,17 @@ class Chat {
 
   final Service service = Service();
 
-  Chat(LocalUser owner, LocalUser reciever, String msgType, DateTime time, {String message = "", String attatchmentURI = ""}){
+  Chat(LocalUser owner, LocalUser reciever, String msgType, DateTime time,
+      {String message = "", String attatchmentURI = ""}) {
     this.owner = owner;
     this.reciever = reciever;
-    this.msgType == msgType;
+    this.msgType = msgType;
     this.message = message;
     this.attatchmentURI = attatchmentURI;
     this.time = time;
   }
 
   Future<Map<String, dynamic>> getDoc() async {
-    
     time = DateTime.now();
 
     return {
@@ -33,8 +33,6 @@ class Chat {
       "seen": false
     };
   }
-
-
 
   // Chat cast()
 

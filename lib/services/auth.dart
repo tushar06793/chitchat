@@ -9,13 +9,14 @@ class AuthService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   static String name = "Random";
+  static String st = "";
   static String defaultProfile =
       "https://firebasestorage.googleapis.com/v0/b/droidrush2k21.appspot.com/o/files%2Fprofile_default.jpg?alt=media&token=0b581309-aafe-4640-9f15-263153257485";
 
   // cast Firebase User to custom user class
   LocalUser? castLocalUser(User user) {
     return user != null
-        ? LocalUser(user.uid, name, user.phoneNumber!, defaultProfile)
+        ? LocalUser(user.uid, name, user.phoneNumber!, defaultProfile, st)
         : null;
   }
 
@@ -72,7 +73,7 @@ class AuthService {
               "phone": number,
               "status": "Unavalible",
               "uid": _auth.currentUser!.uid,
-              "profile": data!["profile"]
+              "profile": data!["profile"],
             });
           } else {
             await _firestore.collection('users').doc(number).set({
@@ -80,7 +81,7 @@ class AuthService {
               "phone": number,
               "status": "Unavalible",
               "uid": _auth.currentUser!.uid,
-              "profile": defaultProfile
+              "profile": defaultProfile,
             });
           }
         });
