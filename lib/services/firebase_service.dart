@@ -33,8 +33,8 @@ class Service {
         chats.add({
           "friend": friend,
           "last_chat": doc.data()["last_sender"] 
-            ? new Chat(user, friend, "text", DateTime.fromMicrosecondsSinceEpoch(data["last_chat_time"]), message: data["last_chat"]) 
-            : new Chat(friend, user, "text", DateTime.fromMicrosecondsSinceEpoch(data["last_chat_time"]), message: data["last_chat"]) 
+            ? new Chat(user, friend, data["last_chat_type"], DateTime.fromMicrosecondsSinceEpoch(data["last_chat_time"]), message: data["last_chat"], attatchmentURI: data["last_chat_URI"]) 
+            : new Chat(friend, user, data["last_chat_type"], DateTime.fromMicrosecondsSinceEpoch(data["last_chat_time"]), message: data["last_chat"], attatchmentURI: data["last_chat_URI"]) 
         });
       }
     });
@@ -82,7 +82,9 @@ class Service {
     // for owners
     await _firestore.collection('users').doc(chat.owner.phone).collection('friends').doc(chat.reciever.phone).set({
       "phone": chat.reciever.phone,
-      "last_chat": chat.message,
+      "last_chat_type": chat.msgType,
+      "last_chat_URI": chat.attatchmentURI,
+      "last_chat_message": chat.message,
       "last_chat_time": chat.time.microsecondsSinceEpoch,
       "last_sender": true
     });
@@ -90,7 +92,9 @@ class Service {
     // for reciever
     await _firestore.collection('users').doc(chat.reciever.phone).collection('friends').doc(chat.owner.phone).set({
       "phone": chat.owner.phone,
-      "last_chat": chat.message,
+      "last_chat_type": chat.msgType,
+      "last_chat_URI": chat.attatchmentURI,
+      "last_chat_message": chat.message,
       "last_chat_time": chat.time.microsecondsSinceEpoch,
       "last_sender": false
     });

@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:chitchat/models/chat.dart';
 import 'package:chitchat/models/user.dart';
 import 'package:chitchat/services/firebase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ConversationScreen extends StatefulWidget {
   LocalUser owner, friend;
@@ -22,8 +24,23 @@ class _ConversationScreenState extends State<ConversationScreen> {
   List<Chat>? chats = [];
   final TextEditingController _message = TextEditingController();
   Timer? timer;
+  late File imageFile;
 
   _ConversationScreenState({required this.owner, required this.friend});
+
+   Future getImage() async {
+    ImagePicker _picker = ImagePicker();
+
+    await _picker.pickImage(source: ImageSource.gallery).then((xFile) async {
+      if (xFile != null) {
+        imageFile = File(xFile.path);
+        String URI = (await service.uploadFile(imageFile))!;
+        service.sendChat(new Chat(
+          owner, friend, "image", new DateTime.now(), attatchmentURI: URI
+        ));
+      }
+    });
+  }
 
   void fetchNewChats() async {
     List<Chat> updatedChats = (await service.fetchChats(owner, friend))!;

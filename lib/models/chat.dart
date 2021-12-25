@@ -7,18 +7,16 @@ class Chat {
   late String message;
   late String msgType = "text";
   late String attatchmentURI;
-  late var attachment;
   late DateTime time;
 
   final Service service = Service();
 
-  Chat(LocalUser owner, LocalUser reciever, String msgType, DateTime time, {String message = "", var attachment = null, String attatchmentURI = ""}){
+  Chat(LocalUser owner, LocalUser reciever, String msgType, DateTime time, {String message = "", String attatchmentURI = ""}){
     this.owner = owner;
     this.reciever = reciever;
     this.msgType == msgType;
     this.message = message;
     this.attatchmentURI = attatchmentURI;
-    this.attachment = attachment;
     this.time = time;
   }
 
@@ -26,10 +24,6 @@ class Chat {
     
     time = DateTime.now();
 
-    if ( msgType != "text" ) {
-      // store attatchment to firebase storage
-      attatchmentURI = (await service.uploadFile(attachment))!;
-    }
     return {
       "reciever": reciever.phone,
       "attatchmentURI": attatchmentURI,
