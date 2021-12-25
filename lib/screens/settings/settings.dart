@@ -41,9 +41,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         LocalUser updatedUser = await _auth.fetchUser(user);
 
         setState(() {
-          user = updatedUser;      
+          user = updatedUser;
         });
-
       }
     });
   }
@@ -65,7 +64,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 Padding(padding: const EdgeInsets.only(top: 10.0)),
                 CircleAvatar(
-                  backgroundImage: AssetImage(user.profile),
+                  backgroundImage: NetworkImage(user.profile),
                   radius: 90,
                 ),
                 Positioned(
