@@ -28,16 +28,15 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   _ConversationScreenState({required this.owner, required this.friend});
 
-   Future getImage() async {
+  Future getImage() async {
     ImagePicker _picker = ImagePicker();
 
     await _picker.pickImage(source: ImageSource.gallery).then((xFile) async {
       if (xFile != null) {
         imageFile = File(xFile.path);
         String URI = (await service.uploadFile(imageFile))!;
-        service.sendChat(new Chat(
-          owner, friend, "image", new DateTime.now(), attatchmentURI: URI
-        ));
+        service.sendChat(new Chat(owner, friend, "image", new DateTime.now(),
+            attatchmentURI: URI));
       }
     });
   }
@@ -84,7 +83,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: CircleAvatar(
-          backgroundImage: friend.profile != "" ? AssetImage(friend.profile) : null,
+          backgroundImage:
+              friend.profile != "" ? AssetImage(friend.profile) : null,
         ),
         title: Text(friend.username),
         actions: [
@@ -123,7 +123,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                         controller: _message,
                         decoration: InputDecoration(
                             suffixIcon: IconButton(
-                              onPressed: () {},
+                              onPressed: () => getImage(),
                               icon: Icon(Icons.photo),
                             ),
                             hintText: "Send Message",
@@ -146,26 +146,76 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   Widget messages(Size size, Chat chat, LocalUser owner, LocalUser friend,
       BuildContext context) {
-    //return chat.msgType == "text" ?
-    return Container(
-      width: size.width,
-      alignment:
-          chat.owner == owner ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Colors.blue,
-        ),
-        child: Text(
-          chat.message,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-          ),
-        ),
+    return chat.msgType == "text"
+        ? Container(
+            width: size.width,
+            alignment: chat.owner == owner
+                ? Alignment.centerRight
+                : Alignment.centerLeft,
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+              margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.blue,
+              ),
+              child: Text(
+                chat.message,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          )
+        : Container(
+            height: size.height / 2.5,
+            width: size.width,
+            padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+            alignment: chat.owner == owner
+                ? Alignment.centerRight
+                : Alignment.centerLeft,
+            child: InkWell(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ShowImage(
+                    imageUrl: chat.attatchmentURI,
+                  ),
+                ),
+              ),
+              child: Container(
+                height: size.height / 2.5,
+                width: size.width / 2,
+                decoration: BoxDecoration(border: Border.all()),
+                alignment: chat.attatchmentURI != "" ? null : Alignment.center,
+                child: chat.attatchmentURI != ""
+                    ? Image.network(
+                        chat.attatchmentURI,
+                        fit: BoxFit.cover,
+                      )
+                    : CircularProgressIndicator(),
+              ),
+            ),
+          );
+  }
+}
+
+class ShowImage extends StatelessWidget {
+  final String imageUrl;
+
+  const ShowImage({required this.imageUrl, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      body: Container(
+        height: size.height,
+        width: size.width,
+        color: Colors.black,
+        child: Image.network(imageUrl),
       ),
     );
   }

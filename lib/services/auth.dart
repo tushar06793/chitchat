@@ -5,16 +5,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AuthService {
-
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   static String name = "Random";
-  static String defaultProfile = "https://firebasestorage.googleapis.com/v0/b/droidrush2k21.appspot.com/o/images%2Fb1b0e300-64e9-11ec-a681-7b763fc31418.jpg?alt=media&token=8bbc812e-6dc6-417d-986f-5cbbd53a428d";
+  static String defaultProfile =
+      "https://firebasestorage.googleapis.com/v0/b/droidrush2k21.appspot.com/o/files%2Fprofile_default.jpg?alt=media&token=0b581309-aafe-4640-9f15-263153257485";
 
   // cast Firebase User to custom user class
-  LocalUser? castLocalUser(User user){
-    return user != null ? LocalUser(user.uid, name, user.phoneNumber!, defaultProfile) : null;
+  LocalUser? castLocalUser(User user) {
+    return user != null
+        ? LocalUser(user.uid, name, user.phoneNumber!, defaultProfile)
+        : null;
   }
 
   User? getUser() {
@@ -45,21 +47,25 @@ class AuthService {
 
   // sign in with phone number
   Future signInWithPhoneNumber(String number, BuildContext context) async {
-
     final _codeController = TextEditingController();
     number = "+91" + number;
 
     await _auth.verifyPhoneNumber(
       phoneNumber: number,
-      timeout: Duration(seconds: 60*2),
+      timeout: Duration(seconds: 60 * 2),
       verificationCompleted: (AuthCredential credential) async {
-        UserCredential userCredential= await _auth.signInWithCredential(credential);
+        UserCredential userCredential =
+            await _auth.signInWithCredential(credential);
         userCredential.user!.updateDisplayName(name);
 
         print("Login successfully");
 
-        await _firestore.collection('users').doc(number).get().then((snapshot) async {
-          if(snapshot.exists){
+        await _firestore
+            .collection('users')
+            .doc(number)
+            .get()
+            .then((snapshot) async {
+          if (snapshot.exists) {
             var data = snapshot.data();
             await _firestore.collection('users').doc(number).set({
               "name": name,
@@ -79,74 +85,82 @@ class AuthService {
           }
         });
 
-        Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
+        Navigator.push(
+            context, MaterialPageRoute(builder: (_) => HomeScreen()));
       },
       verificationFailed: (FirebaseAuthException exception) {
         // Navigator.of(context).pop();
         print(exception);
         return null;
       },
-      codeSent: (String verificationId, [int? forceResendingToken]){
-        showDialog(context: context, barrierDismissible: false, builder: (context) {
-          return AlertDialog(
-            title: Text('Provide Code'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                TextField(
-                  controller: _codeController,
-                  keyboardType: TextInputType.number,
-                )
-              ],
-            ),
-            actions: <Widget>[
-              FlatButton(
-                onPressed: () async {
+      codeSent: (String verificationId, [int? forceResendingToken]) {
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('Provide Code'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    TextField(
+                      controller: _codeController,
+                      keyboardType: TextInputType.number,
+                    )
+                  ],
+                ),
+                actions: <Widget>[
+                  FlatButton(
+                    onPressed: () async {
+                      print(_codeController.text.trim());
 
-                  print(_codeController.text.trim());
+                      AuthCredential credential = PhoneAuthProvider.credential(
+                        verificationId: verificationId,
+                        smsCode: _codeController.text.trim(),
+                      );
+                      UserCredential userCredential =
+                          await _auth.signInWithCredential(credential);
+                      userCredential.user!.updateDisplayName(name);
 
-                  AuthCredential credential = PhoneAuthProvider.credential(
-                    verificationId: verificationId,
-                    smsCode: _codeController.text.trim(),
-                  );
-                  UserCredential userCredential= await _auth.signInWithCredential(credential);
-                  userCredential.user!.updateDisplayName(name);
+                      print("Login successfully");
 
-                  print("Login successfully");
-
-                  await _firestore.collection('users').doc(number).get().then((snapshot) async {
-                    if(snapshot.exists){
-                      var data = snapshot.data();
-                      await _firestore.collection('users').doc(number).set({
-                        "name": name,
-                        "phone": number,
-                        "status": "Unavalible",
-                        "uid": _auth.currentUser!.uid,
-                        "profile": data!["profile"]
+                      await _firestore
+                          .collection('users')
+                          .doc(number)
+                          .get()
+                          .then((snapshot) async {
+                        if (snapshot.exists) {
+                          var data = snapshot.data();
+                          await _firestore.collection('users').doc(number).set({
+                            "name": name,
+                            "phone": number,
+                            "status": "Unavalible",
+                            "uid": _auth.currentUser!.uid,
+                            "profile": data!["profile"]
+                          });
+                        } else {
+                          await _firestore.collection('users').doc(number).set({
+                            "name": name,
+                            "phone": number,
+                            "status": "Unavalible",
+                            "uid": _auth.currentUser!.uid,
+                            "profile": defaultProfile
+                          });
+                        }
                       });
-                    } else {
-                      await _firestore.collection('users').doc(number).set({
-                        "name": name,
-                        "phone": number,
-                        "status": "Unavalible",
-                        "uid": _auth.currentUser!.uid,
-                        "profile": defaultProfile
-                      });
-                    }
-                  });
 
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
-
-                },
-                child: Text('Confirm'),
-                textColor: Colors.white,
-                color: Colors.blue,
-              )
-            ],
-          );
-        });
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => HomeScreen()));
+                    },
+                    child: Text('Confirm'),
+                    textColor: Colors.white,
+                    color: Colors.blue,
+                  )
+                ],
+              );
+            });
       },
-      codeAutoRetrievalTimeout: (String verificationId){},
+      codeAutoRetrievalTimeout: (String verificationId) {},
     );
   }
 
@@ -158,5 +172,4 @@ class AuthService {
       return null;
     }
   }
-
 }
