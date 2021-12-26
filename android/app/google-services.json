@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "988630717126",
+    "project_id": "droidrush2k21",
+    "storage_bucket": "droidrush2k21.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988630717126:android:343462e6ccab345692fdc7",
+        "android_client_info": {
+          "package_name": "com.example.chitchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "988630717126-89pbis60h1a3k1kbbm31c8a1dmg4vhd6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDE9kfI6iawszZeeYed8HZFcZS7mfDFP80"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "988630717126-89pbis60h1a3k1kbbm31c8a1dmg4vhd6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
