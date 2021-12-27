@@ -53,7 +53,7 @@ class _GroupInfoState extends State<GroupInfo> {
 
   Future removeMembers(int index) async {
     String uid = membersList[index]['uid'];
-
+    String phone = membersList[index]['phone'];
     setState(() {
       isLoading = true;
       membersList.removeAt(index);
@@ -64,7 +64,7 @@ class _GroupInfoState extends State<GroupInfo> {
     }).then((value) async {
       await _firestore
           .collection('users')
-          .doc(uid)
+          .doc(phone)
           .collection('groups')
           .doc(widget.groupId)
           .delete();
@@ -110,7 +110,7 @@ class _GroupInfoState extends State<GroupInfo> {
 
       await _firestore
           .collection('users')
-          .doc(_auth.currentUser!.uid)
+          .doc(_auth.currentUser!.phone)
           .collection('groups')
           .doc(widget.groupId)
           .delete();
